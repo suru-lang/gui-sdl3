@@ -8,9 +8,7 @@ on:
 env:
   SDL_VERSION: 3.2.26
   SDL_TTF_VERSION: 3.2.2
-  # 画面のない CI では、SDL の画面なしの映像ドライバーで描く
-  SDL_VIDEO_DRIVER: offscreen
-  # macOS の offscreen は OpenGL を開けないので、描画はソフトウェアで
+  # 描画はソフトウェアで(CI に GPU はない)
   SDL_RENDER_DRIVER: software
 
 jobs:
@@ -50,8 +48,13 @@ jobs:
         run: |
           echo "PKG_CONFIG_PATH=$HOME/sdl3/lib/pkgconfig:$HOME/sdl3/lib/x86_64-linux-gnu/pkgconfig" >> $GITHUB_ENV
           echo "LD_LIBRARY_PATH=$HOME/sdl3/lib:$HOME/sdl3/lib/x86_64-linux-gnu" >> $GITHUB_ENV
+          # pkg-config の名前(sdl3)とライブラリの名前(SDL3)が違うので、リンカーにも場所を教える
+          echo "LIBRARY_PATH=$HOME/sdl3/lib:$HOME/sdl3/lib/x86_64-linux-gnu" >> $GITHUB_ENV
+          # 画面のない Linux では、SDL の画面なしの映像ドライバーで描く
+          echo "SDL_VIDEO_DRIVER=offscreen" >> $GITHUB_ENV
       - name: SDL3 を入れる(macOS)
         if: runner.os == 'macOS'
+        # macOS の CI には画面があるので、本物の窓(cocoa)で試す。offscreen は macOS では OpenGL を開こうとして失敗する
         run: brew install sdl3 sdl3_ttf pkg-config
       - name: kumu を入れる
         run: go install github.com/suru-lang/suru/cmd/kumu@main
