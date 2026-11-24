@@ -10,6 +10,8 @@ env:
   SDL_TTF_VERSION: 3.2.2
   # 画面のない CI では、SDL の画面なしの映像ドライバーで描く
   SDL_VIDEO_DRIVER: offscreen
+  # macOS の offscreen は OpenGL を開けないので、描画はソフトウェアで
+  SDL_RENDER_DRIVER: software
 
 jobs:
   test:
