@@ -1,0 +1,57 @@
+name: 試験
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  SDL_VERSION: 3.2.26
+  SDL_TTF_VERSION: 3.2.2
+  # 画面のない CI では、SDL の画面なしの映像ドライバーで描く
+  SDL_VIDEO_DRIVER: offscreen
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: clang と書体を入れる(Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y clang pkg-config cmake ninja-build libfreetype-dev fonts-noto-cjk libx11-dev libxext-dev
+      - name: SDL3 をキャッシュから取る(Linux)
+        if: runner.os == 'Linux'
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: ~/sdl3
+          key: sdl3-${{ runner.os }}-${{ env.SDL_VERSION }}-${{ env.SDL_TTF_VERSION }}
+      - name: SDL3 をソースから作る(Linux。Ubuntu 24.04 の apt には SDL3 がない)
+        if: runner.os == 'Linux' && steps.cache.outputs.cache-hit != 'true'
+        run: |
+          cd /tmp
+          curl -sSLf https://github.com/libsdl-org/SDL/releases/download/release-$SDL_VERSION/SDL3-$SDL_VERSION.tar.gz | tar xz
+          curl -sSLf https://github.com/libsdl-org/SDL_ttf/releases/download/release-$SDL_TTF_VERSION/SDL3_ttf-$SDL_TTF_VERSION.tar.gz | tar xz
+          cmake -S SDL3-$SDL_VERSION -B b1 -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/sdl3 -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF
+          cmake --build b1 && cmake --install b1
+          cmake -S SDL3_ttf-$SDL_TTF_VERSION -B b2 -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/sdl3 -DCMAKE_PREFIX_PATH=$HOME/sdl3 -DSDLTTF_VENDORED=OFF -DSDLTTF_HARFBUZZ=OFF -DSDLTTF_PLUTOSVG=OFF
+          cmake --build b2 && cmake --install b2
+      - name: SDL3 の場所を知らせる(Linux)
+        if: runner.os == 'Linux'
+        run: |
+          echo "PKG_CONFIG_PATH=$HOME/sdl3/lib/pkgconfig:$HOME/sdl3/lib/x86_64-linux-gnu/pkgconfig" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=$HOME/sdl3/lib:$HOME/sdl3/lib/x86_64-linux-gnu" >> $GITHUB_ENV
+      - name: SDL3 を入れる(macOS)
+        if: runner.os == 'macOS'
+        run: brew install sdl3 sdl3_ttf pkg-config
+      - name: kumu を入れる
+        run: go install github.com/suru-lang/suru/cmd/kumu@main
+      - name: 試験
+        run: ~/go/bin/kumu 試験
