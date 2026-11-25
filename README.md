@@ -1,8 +1,10 @@
+English | [日本語](README_jp.md)
+
 # gui-sdl3
 
-[する](https://github.com/suru-lang/suru) で窓を開いて絵と日本語の文字を描く、GUI のライブラリ「画面」です。[SDL3](https://github.com/libsdl-org/SDL) と [SDL3_ttf](https://github.com/libsdl-org/SDL_ttf) を外部の関数として呼びます。macOS と Linux で動きます(Windows は する の実行時ライブラリが対応してから)。
+「画面」 ("screen"), a GUI library for [Suru (「する」)](https://github.com/suru-lang/suru) that opens windows and draws shapes and Japanese text. It calls [SDL3](https://github.com/libsdl-org/SDL) and [SDL3_ttf](https://github.com/libsdl-org/SDL_ttf) as foreign functions. It runs on macOS and Linux (Windows once Suru's runtime library supports it).
 
-窓・描く・文字・事象の土台と、その上に する で書いた部品(ラベル・ボタン・チェック・スライダー・入力欄)があります。部品を使うアプリは、Elm のように「モデル」「描画」「更新」で書きます。
+There is a base layer of windows, drawing, text and events, and on top of it widgets written in Suru (labels, buttons, checkboxes, sliders, text fields). Apps using widgets are written like Elm, with a "model", a "view" and an "update".
 
 ```
 「画面」 を 読み込んで 使う
@@ -18,7 +20,7 @@
 始める
 ```
 
-部品を使うアプリは次のように書きます。全体は [例/部品見本.suru](例/部品見本.suru) です。
+An app using widgets is written as follows. The whole thing is [例/部品見本.suru](例/部品見本.suru).
 
 ```
 「画面」 を 読み込んで 使う
@@ -35,54 +37,54 @@ n を 数描画する とは （（n を 文字列化する） と （20 と 20�
 「数える」 を 240 で 120 に 0 から 数更新すること へ 数描画すること より アプリ実行する
 ```
 
-クリックで四角を置く例(部品を使わず、事象を自分で読む)は [例/四角置き.suru](例/四角置き.suru) です。
+An example that places squares on click (reading events directly, without widgets) is [例/四角置き.suru](例/四角置き.suru).
 
-## 入れ方
+## Installing
 
-1. SDL3 と SDL3_ttf(3.2 以上)を入れます。
+1. Install SDL3 and SDL3_ttf (3.2 or later).
    - macOS: `brew install sdl3 sdl3_ttf`
-   - Debian・Ubuntu(25.04 以降): `sudo apt install libsdl3-dev libsdl3-ttf-dev`
+   - Debian, Ubuntu (25.04 or later): `sudo apt install libsdl3-dev libsdl3-ttf-dev`
    - Fedora: `sudo dnf install SDL3-devel SDL3_ttf-devel`
-   - Ubuntu 24.04 など、パッケージがなければソースから入れます(`.github/workflows/試験.yml` の手順)。
-2. する 0.4.0 以上(`外部の「…」 を 主スレッドで 読み込む` と `単精度` が要ります)と kumu を入れます。
-3. プロジェクトで `kumu 追加 github.com/suru-lang/gui-sdl3` とします。
+   - Where there are no packages, such as Ubuntu 24.04, install from source (the steps in `.github/workflows/試験.yml`).
+2. Install Suru 0.4.0 or later (it needs `外部の「…」 を 主スレッドで 読み込む` and `単精度`) and kumu.
+3. In your project, run `kumu 追加 github.com/suru-lang/gui-sdl3`.
 
-## 使い方
+## Usage
 
-使えるものの一覧は [画面.suru](画面.suru) の頭に書いてあります。
+The list of what is available is at the head of [画面.suru](画面.suru).
 
-- `題 を 幅 で 高さ に 窓作成する` で窓を開き、描いてから `画面表示する` で見せます。毎回 `全面塗装する` から描き直します(画面の書き換えに合わせて待つので、繰り返しても CPU を使い切りません)。
-- `窓事象取得する` は届いている事象を全部返し、待ちません。繰り返しは、手順の最後で自分を呼んで書きます(例を見てください)。
-- 色は `赤 と 緑 と 青 の 色`(0〜255)、四角は `左 と 上 と 幅 と 高さ の 四角`、点は `横 と 縦` のリストです。
-- 文字は OS の日本語の書体(macOS はヒラギノ、Linux は Noto Sans CJK か IPA ゴシック)を 18 の大きさで使います。`書体設定する` で変えられます。
+- Open a window with `題 を 幅 で 高さ に 窓作成する`, draw, then show it with `画面表示する`. Redraw from `全面塗装する` every time (it waits for the screen refresh, so looping doesn't use up the CPU).
+- `窓事象取得する` returns all pending events and doesn't wait. Loops are written by calling yourself at the end of a procedure (see the examples).
+- Colors are `赤 と 緑 と 青 の 色` (red, green, blue, 0 to 255), rectangles are `左 と 上 と 幅 と 高さ の 四角` (left, top, width, height), and points are lists `横 と 縦` (x and y).
+- Text uses the OS's Japanese font (Hiragino on macOS, Noto Sans CJK or IPA Gothic on Linux) at size 18. `書体設定する` changes it.
 
-## 決めたこと
+## Decisions
 
-### 土台
+### Base
 
-1. **SDL3 の関数は主スレッドで呼ぶ。** macOS の窓は最初のスレッドでしか操作できないので、`外部の「SDL3」 を 主スレッドで 読み込む` と書いています。並行して動かしている処理から描いても大丈夫です(コンパイルしたもの。インタプリタは最初のスレッドからだけ)。
-2. **構造体は する でバイトに組み立てる。** SDL の四角(`SDL_FRect`)は単精度4つの並びに、事象(`SDL_Event`)は 128 バイトから読みます。単精度の変換も する で書いています。
-3. **文字は SDL3_ttf の文字の機構で描く。** 書いた字の形をまとめて覚えるので、毎回描き直しても速く描けます。
-4. **点の単位で描く。** 高解像度の画面(Retina など)では、いまは引き伸ばして表示します。くっきり描くのは今後の候補です。
-5. **試験は画面なしで動かす。** Linux では `SDL_VIDEO_DRIVER=offscreen`、macOS では本物の窓(offscreen は OpenGL を開けないため)で、どちらも `SDL_RENDER_DRIVER=software` で描き、`画像保存する` で BMP にした画素を確かめます。
+1. **SDL3 functions are called on the main thread.** macOS windows can only be operated from the first thread, so the library writes `外部の「SDL3」 を 主スレッドで 読み込む`. Drawing from code running concurrently is fine (in compiled programs; the interpreter only from the first thread).
+2. **Structs are assembled into bytes in Suru.** SDL rectangles (`SDL_FRect`) are laid out as four floats, and events (`SDL_Event`) are read from 128 bytes. Float conversion is written in Suru too.
+3. **Text is drawn with SDL3_ttf's text engine.** It caches the shapes of drawn glyphs, so redrawing every frame stays fast.
+4. **Drawing is in points.** On high-resolution screens (Retina and the like), it is currently shown scaled up. Drawing crisply is future work.
+5. **Tests run without a screen.** On Linux with `SDL_VIDEO_DRIVER=offscreen`, on macOS with a real window (offscreen can't open OpenGL), both drawing with `SDL_RENDER_DRIVER=software`, and checking the pixels saved as BMP with `画像保存する`.
 
-### 部品とアプリ
+### Widgets and apps
 
-1. **アプリは Elm のように書く。** モデル(アプリの今の値)から部品のリストを作る「描画」と、部品から届く知らせでモデルを変える「更新」を、どちらも純粋な関数で書きます。窓・繰り返し・当たり判定・焦点はライブラリが受け持ちます。する の値は変更しないので、この形がいちばん素直に書けます。
-2. **部品は 部品 という1つの型の形。** 描画はそのリストを返すだけで、描くのと事象を当てるのはライブラリです。後ろの部品ほど上に描き、マウスも先に受け取ります。
-3. **チェック・スライダー・入力欄は、新しい値を知らせに変える関数を受け取る。** 部品の型のフィールドは形ごとに別の名前にしています(`切替`・`量変更`・`文変更`)。選択肢のある型では同じ名前のフィールドの型がそろってしまうためです。
-4. **ボタンは左ボタンで押して、同じボタンの上で離したときに知らせる。** 外で押して中で離したとき、右ボタンのときは知らせません。
-5. **入力欄は押すと焦点が当たり、文字入力を始める。** Return か Esc、ほかの所を押すと外れます。IME の変換中の文字は青い字と下線で見せ、Backspace は変換中でないときだけ1文字消します。
-6. **`アプリ模擬する` で窓なしで試せる。** 事象のリストを順に当てた後のモデルを返す純粋な関数です。マウス押下事象などを自分で作って渡せます。
+1. **Apps are written like Elm.** Both the "view", which makes a list of widgets from the model (the app's current value), and the "update", which changes the model from messages sent by widgets, are pure functions. The library takes care of the window, the loop, hit testing and focus. Suru values never change, so this form is the most natural to write.
+2. **Widgets are shapes of one type, 部品.** The view just returns a list of them; drawing and dispatching events are the library's job. Later widgets are drawn on top and receive the mouse first.
+3. **Checkboxes, sliders and text fields take a function that turns the new value into a message.** The widget type's fields have different names per shape (`切替`, `量変更`, `文変更`), because in a type with alternatives, fields with the same name end up with the same type.
+4. **A button sends its message when the left button is pressed on it and released over the same button.** Pressing outside and releasing inside, or using the right button, sends nothing.
+5. **Pressing a text field focuses it and starts text input.** Return, Esc or pressing elsewhere unfocuses it. Text being composed by the IME is shown in blue with an underline, and Backspace deletes a character only when not composing.
+6. **`アプリ模擬する` lets you test without a window.** It is a pure function returning the model after applying a list of events in order. You can build mouse-down events and the like yourself and pass them.
 
-## 今後の候補
+## Future work
 
-- 縦横の並べ方(部品の四角を自動で決める)、スクロール、複数行の入力欄、入力欄の中のカーソル移動
-- 時間で動くもの(アニメーション・時計)のための知らせ
-- 高解像度の画面でくっきり描く
-- 画像ファイルを読んで描く
-- Windows(する の実行時ライブラリの Windows 対応の後)
+- Horizontal and vertical layout (deciding widget rectangles automatically), scrolling, multi-line text fields, cursor movement inside text fields
+- Messages for things that move with time (animation, clocks)
+- Crisp drawing on high-resolution screens
+- Loading and drawing image files
+- Windows (after Suru's runtime library supports Windows)
 
-## ライセンス
+## License
 
-MIT。SDL3 と SDL3_ttf は zlib ライセンス、SDL3_ttf が使う FreeType は FreeType License(FTL)か GPLv2 です。
+MIT. SDL3 and SDL3_ttf are under the zlib license; FreeType, used by SDL3_ttf, is under the FreeType License (FTL) or GPLv2.
