@@ -10,13 +10,13 @@ There is a base layer of windows, drawing, text and events, and on top of it wid
 「画面」 を 読み込んで 使う
 
 始める とは 以下の手順です
-  w とは 「こんにちは」 を 320 で 120 に 窓作成した 結果
-  w を （255 と 255 と 255 の 色） で 全面塗装する
-  w に （20 と 20 と 40 と 40 の 四角） を （220 と 80 と 60 の 色） で 四角塗装する
-  w に 「こんにちは、世界」 を （80 と 28） で （0 と 0 と 0 の 色） から 文字描画する
-  w を 画面表示する
-  3000 を 一時停止する
-  w を 窓閉鎖する
+  w とは 「こんにちは」 を 320 で 120 に 窓作成した 結果 です
+  w を （255 と 255 と 255 の 色） で 全面塗装します
+  w に （20 と 20 と 40 と 40 の 四角） を （220 と 80 と 60 の 色） で 四角塗装します
+  w に 「こんにちは、世界」 を （80 と 28） で （0 と 0 と 0 の 色） から 文字描画します
+  w を 画面表示します
+  3000 を 一時停止します
+  w を 窓閉鎖します
   以上です
 始める
 ```
@@ -26,16 +26,16 @@ An app using widgets is written as follows. The whole thing is [例/部品見本
 ```
 「画面」 を 読み込んで 使う
 
-合図 とは 増加 か 減少
+合図 とは 増加 か 減少 です
 
-合図 を 数 で 数更新する は 数
-増加 を n で 数更新する とは n + 1
-減少 を n で 数更新する とは n - 1
+合図 を 数 で 数更新する は 数 を 返す
+増加 を n で 数更新する とは n + 1 です
+減少 を n で 数更新する とは n - 1 です
 
-数 を 数描画する は 部品 の リスト
-n を 数描画する とは （（n を 文字列化する） と （20 と 20） の ラベル） と （「+1」 と （20 と 50 と 80 と 36 の 四角） と 増加 の ボタン） と （「−1」 と （110 と 50 と 80 と 36 の 四角） と 減少 の ボタン）
+数 を 数描画する は 部品 の リスト を 返す
+n を 数描画する とは （（n を 文字列化する） と （20 と 20） の ラベル） と （「+1」 と （20 と 50 と 80 と 36 の 四角） と 増加 の ボタン） と （「−1」 と （110 と 50 と 80 と 36 の 四角） と 減少 の ボタン） です
 
-「数える」 を 240 で 120 に 0 から 数更新すること へ 数描画すること より アプリ実行する
+「数える」 を 240 で 120 に 0 から 数更新すること へ 数描画すること より アプリ実行します
 ```
 
 An example that places squares on click (reading events directly, without widgets) is [例/四角置き.suru](例/四角置き.suru).
@@ -66,7 +66,7 @@ The list of what is available is at the head of [画面.suru](画面.suru).
 1. **SDL3 functions are called on the main thread.** macOS windows can only be operated from the first thread, so the library writes `外部の「SDL3」 を 主スレッドで 読み込む`. Drawing from code running concurrently is fine (in compiled programs; the interpreter only from the first thread).
 2. **Structs are assembled into bytes in Suru.** SDL rectangles (`SDL_FRect`) are laid out as four floats, and events (`SDL_Event`) are read from 128 bytes. Float conversion is written in Suru too.
 3. **Text is drawn with SDL3_ttf's text engine.** It caches the shapes of drawn glyphs, so redrawing every frame stays fast.
-4. **Drawing is in points.** On high-resolution screens (Retina and the like), it is currently shown scaled up. Drawing crisply is future work.
+4. **Drawing is in points.** Coordinates, sizes, mouse positions and the window size are all in points. On high-resolution screens (Retina and the like), rectangles and lines are scaled to pixels by the renderer scale, and text is drawn in pixels with a font of the scaled size so it stays crisp. The scale is taken from the screen when the window is created.
 5. **Tests run without a screen.** On Linux with `SDL_VIDEO_DRIVER=offscreen`, on macOS with a real window (offscreen can't open OpenGL), both drawing with `SDL_RENDER_DRIVER=software`, and checking the pixels saved as BMP with `画像保存する`.
 
 ### Widgets and apps
@@ -82,7 +82,7 @@ The list of what is available is at the head of [画面.suru](画面.suru).
 
 - Horizontal and vertical layout (deciding widget rectangles automatically), scrolling, multi-line text fields, cursor movement inside text fields
 - Messages for things that move with time (animation, clocks)
-- Crisp drawing on high-resolution screens
+- Re-reading the scale when the window moves to a screen with a different scale
 - Loading and drawing image files
 - Windows (after Suru's runtime library supports Windows)
 
