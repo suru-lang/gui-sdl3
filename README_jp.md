@@ -46,8 +46,9 @@ n を 数描画する とは （（n を 文字列化する） と （20 と 20�
    - macOS: `brew install sdl3 sdl3_ttf`
    - Debian・Ubuntu(25.04 以降): `sudo apt install libsdl3-dev libsdl3-ttf-dev`
    - Fedora: `sudo dnf install SDL3-devel SDL3_ttf-devel`
+   - Windows(MSYS2 の UCRT64): `pacman -S mingw-w64-ucrt-x86_64-sdl3 mingw-w64-ucrt-x86_64-sdl3-ttf`。UCRT64 のシェルで clang・lld・pkgconf(`pacman -S mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-lld mingw-w64-ucrt-x86_64-pkgconf`)を使います。SDL3 の DLL は UCRT64 の `PATH` から見つかります。
    - Ubuntu 24.04 など、パッケージがなければソースから入れます(`.github/workflows/試験.yml` の手順)。
-2. する 0.7.0 以上(ライブラリが手順を「以下の手順です … 以上です」で書くため)と kumu を入れます。
+2. する 0.7.0 以上(ライブラリが手順を「以下の手順です … 以上です」で書くため)と kumu を入れます。Windows では 0.7.0 より後の版(Windows に対応した最初の版)が要ります。
 3. プロジェクトで `kumu 追加 github.com/suru-lang/gui-sdl3` とします。
 
 ## 使い方
@@ -57,7 +58,7 @@ n を 数描画する とは （（n を 文字列化する） と （20 と 20�
 - `題 を 幅 で 高さ に 窓作成する` で窓を開き、描いてから `画面表示する` で見せます。毎回 `全面塗装する` から描き直します(画面の書き換えに合わせて待つので、繰り返しても CPU を使い切りません)。
 - `窓事象取得する` は届いている事象を全部返し、待ちません。繰り返しは、手順の最後で自分を呼んで書きます(例を見てください)。
 - 色は `赤 と 緑 と 青 の 色`(0〜255)、四角は `左 と 上 と 幅 と 高さ の 四角`、点は `横 と 縦` のリストです。
-- 文字は OS の日本語の書体(macOS はヒラギノ、Linux は Noto Sans CJK か IPA ゴシック)を 18 の大きさで使います。`書体設定する` で変えられます。
+- 文字は OS の日本語の書体(macOS はヒラギノ、Windows は游ゴシックかメイリオ、Linux は Noto Sans CJK か IPA ゴシック)を 18 の大きさで使います。`書体設定する` で変えられます。
 
 ## 決めたこと
 
@@ -84,7 +85,6 @@ n を 数描画する とは （（n を 文字列化する） と （20 と 20�
 - 時間で動くもの(アニメーション・時計)のための知らせ
 - 倍率の違う画面へ窓を動かしたときに、倍率を取り直す
 - 画像ファイルを読んで描く
-- Windows(する の実行時ライブラリの Windows 対応の後)
 
 ## ライセンス
 

@@ -46,8 +46,9 @@ An example that places squares on click (reading events directly, without widget
    - macOS: `brew install sdl3 sdl3_ttf`
    - Debian, Ubuntu (25.04 or later): `sudo apt install libsdl3-dev libsdl3-ttf-dev`
    - Fedora: `sudo dnf install SDL3-devel SDL3_ttf-devel`
+   - Windows (MSYS2 UCRT64): `pacman -S mingw-w64-ucrt-x86_64-sdl3 mingw-w64-ucrt-x86_64-sdl3-ttf`. Use the UCRT64 shell with clang, lld and pkgconf (`pacman -S mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-lld mingw-w64-ucrt-x86_64-pkgconf`); the SDL3 DLLs are found on the UCRT64 `PATH`.
    - Where there are no packages, such as Ubuntu 24.04, install from source (the steps in `.github/workflows/試験.yml`).
-2. Install Suru 0.7.0 or later (the library writes procedures with 「以下の手順です … 以上です」) and kumu.
+2. Install Suru 0.7.0 or later (the library writes procedures with 「以下の手順です … 以上です」) and kumu. On Windows, a release newer than 0.7.0 (the first with Windows support) is needed.
 3. In your project, run `kumu 追加 github.com/suru-lang/gui-sdl3`.
 
 ## Usage
@@ -57,7 +58,7 @@ The list of what is available is at the head of [画面.suru](画面.suru).
 - Open a window with `題 を 幅 で 高さ に 窓作成する`, draw, then show it with `画面表示する`. Redraw from `全面塗装する` every time (it waits for the screen refresh, so looping doesn't use up the CPU).
 - `窓事象取得する` returns all pending events and doesn't wait. Loops are written by calling yourself at the end of a procedure (see the examples).
 - Colors are `赤 と 緑 と 青 の 色` (red, green, blue, 0 to 255), rectangles are `左 と 上 と 幅 と 高さ の 四角` (left, top, width, height), and points are lists `横 と 縦` (x and y).
-- Text uses the OS's Japanese font (Hiragino on macOS, Noto Sans CJK or IPA Gothic on Linux) at size 18. `書体設定する` changes it.
+- Text uses the OS's Japanese font (Hiragino on macOS, Yu Gothic or Meiryo on Windows, Noto Sans CJK or IPA Gothic on Linux) at size 18. `書体設定する` changes it.
 
 ## Decisions
 
@@ -84,7 +85,6 @@ The list of what is available is at the head of [画面.suru](画面.suru).
 - Messages for things that move with time (animation, clocks)
 - Re-reading the scale when the window moves to a screen with a different scale
 - Loading and drawing image files
-- Windows (after Suru's runtime library supports Windows)
 
 ## License
 
