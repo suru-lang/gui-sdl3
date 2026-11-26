@@ -66,7 +66,7 @@ The list of what is available is at the head of [画面.suru](画面.suru).
 1. **SDL3 functions are called on the main thread.** macOS windows can only be operated from the first thread, so the library writes `外部の「SDL3」 を 主スレッドで 読み込む`. Drawing from code running concurrently is fine (in compiled programs; the interpreter only from the first thread).
 2. **Structs are assembled into bytes in Suru.** SDL rectangles (`SDL_FRect`) are laid out as four floats, and events (`SDL_Event`) are read from 128 bytes. Float conversion is written in Suru too.
 3. **Text is drawn with SDL3_ttf's text engine.** It caches the shapes of drawn glyphs, so redrawing every frame stays fast.
-4. **Drawing is in points.** On high-resolution screens (Retina and the like), it is currently shown scaled up. Drawing crisply is future work.
+4. **Drawing is in points.** Coordinates, sizes, mouse positions and the window size are all in points. On high-resolution screens (Retina and the like), rectangles and lines are scaled to pixels by the renderer scale, and text is drawn in pixels with a font of the scaled size so it stays crisp. The scale is taken from the screen when the window is created.
 5. **Tests run without a screen.** On Linux with `SDL_VIDEO_DRIVER=offscreen`, on macOS with a real window (offscreen can't open OpenGL), both drawing with `SDL_RENDER_DRIVER=software`, and checking the pixels saved as BMP with `画像保存する`.
 
 ### Widgets and apps
@@ -82,7 +82,7 @@ The list of what is available is at the head of [画面.suru](画面.suru).
 
 - Horizontal and vertical layout (deciding widget rectangles automatically), scrolling, multi-line text fields, cursor movement inside text fields
 - Messages for things that move with time (animation, clocks)
-- Crisp drawing on high-resolution screens
+- Re-reading the scale when the window moves to a screen with a different scale
 - Loading and drawing image files
 - Windows (after Suru's runtime library supports Windows)
 
