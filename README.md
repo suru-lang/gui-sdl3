@@ -47,7 +47,7 @@ An example that places squares on click (reading events directly, without widget
    - Debian, Ubuntu (25.04 or later): `sudo apt install libsdl3-dev libsdl3-ttf-dev`
    - Fedora: `sudo dnf install SDL3-devel SDL3_ttf-devel`
    - Where there are no packages, such as Ubuntu 24.04, install from source (the steps in `.github/workflows/試験.yml`).
-2. Install Suru 0.4.0 or later (it needs `外部の「…」 を 主スレッドで 読み込む` and `単精度`) and kumu.
+2. Install Suru 0.7.0 or later (the library writes procedures with 「以下の手順です … 以上です」) and kumu.
 3. In your project, run `kumu 追加 github.com/suru-lang/gui-sdl3`.
 
 ## Usage
