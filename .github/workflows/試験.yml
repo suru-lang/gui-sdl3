@@ -57,6 +57,10 @@ jobs:
         # macOS の CI には画面があるので、本物の窓(cocoa)で試す。offscreen は macOS では OpenGL を開こうとして失敗する
         run: brew install sdl3 sdl3_ttf pkg-config
       - name: kumu を入れる
+        env:
+          # proxy.golang.org は main の解決を数分覚えているので、すぐ後の版を使うには直接取る
+          GOPROXY: direct
+          GONOSUMDB: github.com/suru-lang/*
         run: go install github.com/suru-lang/suru/cmd/kumu@main
       - name: 試験
         run: ~/go/bin/kumu 試験
