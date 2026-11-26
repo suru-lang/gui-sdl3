@@ -9,7 +9,7 @@ There is a base layer of windows, drawing, text and events, and on top of it wid
 ```
 「画面」 を 読み込んで 使う
 
-始める とは 手順
+始める とは 以下の手順です
   w とは 「こんにちは」 を 320 で 120 に 窓作成した 結果
   w を （255 と 255 と 255 の 色） で 全面塗装する
   w に （20 と 20 と 40 と 40 の 四角） を （220 と 80 と 60 の 色） で 四角塗装する
@@ -17,6 +17,7 @@ There is a base layer of windows, drawing, text and events, and on top of it wid
   w を 画面表示する
   3000 を 一時停止する
   w を 窓閉鎖する
+  以上です
 始める
 ```
 
