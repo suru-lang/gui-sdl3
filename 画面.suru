@@ -214,7 +214,7 @@ r を 何 で 確認する とは もし r が 成功である ならば 0 を �
   以上です
 
 # OS の日本語の書体を前から探す
-既定書体一覧 とは 「/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc」 と 「/System/Library/Fonts/Hiragino Sans GB.ttc」 と 「/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc」 と 「/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc」 と 「/usr/share/fonts/google-noto-cjk/NotoSansCJK-Regular.ttc」 と 「/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf」 と 「/usr/share/fonts/truetype/fonts-japanese-gothic.ttf」 と 「/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf」 です
+既定書体一覧 とは 「/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc」 と 「/System/Library/Fonts/Hiragino Sans GB.ttc」 と 「C:/Windows/Fonts/YuGothR.ttc」 と 「C:/Windows/Fonts/meiryo.ttc」 と 「C:/Windows/Fonts/msgothic.ttc」 と 「/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc」 と 「/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc」 と 「/usr/share/fonts/google-noto-cjk/NotoSansCJK-Regular.ttc」 と 「/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf」 と 「/usr/share/fonts/truetype/fonts-japanese-gothic.ttf」 と 「/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf」 です
 
 文字列 の リスト を 単精度 で 書体探索する は 番地 を 返す 動作
 空 を 大きさ で 書体探索する とは 「日本語の書体が見つかりません(書体設定する で書体のファイルを指定してください)」 を 失敗します
