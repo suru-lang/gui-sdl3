@@ -47,7 +47,7 @@ n を 数描画する とは （（n を 文字列化する） と （20 と 20�
    - Debian・Ubuntu(25.04 以降): `sudo apt install libsdl3-dev libsdl3-ttf-dev`
    - Fedora: `sudo dnf install SDL3-devel SDL3_ttf-devel`
    - Ubuntu 24.04 など、パッケージがなければソースから入れます(`.github/workflows/試験.yml` の手順)。
-2. する 0.4.0 以上(`外部の「…」 を 主スレッドで 読み込む` と `単精度` が要ります)と kumu を入れます。
+2. する 0.7.0 以上(ライブラリが手順を「以下の手順です … 以上です」で書くため)と kumu を入れます。
 3. プロジェクトで `kumu 追加 github.com/suru-lang/gui-sdl3` とします。
 
 ## 使い方

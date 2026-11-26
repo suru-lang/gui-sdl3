@@ -1,4 +1,4 @@
 名前 とは 「画面」
-版 とは 「0.1.0」
+版 とは 「0.2.0」
 外部依存 とは 「sdl3@3.2.0」 と 「sdl3-ttf@3.2.0」
 導入案内 とは 「macOS: brew install sdl3 sdl3_ttf」 と 「Debian・Ubuntu(25.04 以降): sudo apt install libsdl3-dev libsdl3-ttf-dev」 と 「Fedora: sudo dnf install SDL3-devel SDL3_ttf-devel」 と 「ほかは https://github.com/libsdl-org/SDL と SDL_ttf をソースから入れます」
