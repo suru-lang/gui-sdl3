@@ -48,7 +48,7 @@ An example that places squares on click (reading events directly, without widget
    - Fedora: `sudo dnf install SDL3-devel SDL3_ttf-devel`
    - Windows (MSYS2 UCRT64): `pacman -S mingw-w64-ucrt-x86_64-sdl3 mingw-w64-ucrt-x86_64-sdl3-ttf`. Use the UCRT64 shell with clang, lld and pkgconf (`pacman -S mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-lld mingw-w64-ucrt-x86_64-pkgconf`); the SDL3 DLLs are found on the UCRT64 `PATH`.
    - Where there are no packages, such as Ubuntu 24.04, install from source (the steps in `.github/workflows/試験.yml`).
-2. Install Suru 0.7.0 or later (the library writes procedures with 「以下の手順です … 以上です」) and kumu. On Windows, a release newer than 0.7.0 (the first with Windows support) is needed.
+2. Install Suru 0.7.0 or later (the library writes procedures with 「以下の手順です … 以上です」) and kumu. On Windows, 0.8.0 or later (the first release with Windows support) is needed.
 3. In your project, run `kumu 追加 github.com/suru-lang/gui-sdl3`.
 
 ## Usage
