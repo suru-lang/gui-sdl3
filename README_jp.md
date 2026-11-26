@@ -48,7 +48,7 @@ n を 数描画する とは （（n を 文字列化する） と （20 と 20�
    - Fedora: `sudo dnf install SDL3-devel SDL3_ttf-devel`
    - Windows(MSYS2 の UCRT64): `pacman -S mingw-w64-ucrt-x86_64-sdl3 mingw-w64-ucrt-x86_64-sdl3-ttf`。UCRT64 のシェルで clang・lld・pkgconf(`pacman -S mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-lld mingw-w64-ucrt-x86_64-pkgconf`)を使います。SDL3 の DLL は UCRT64 の `PATH` から見つかります。
    - Ubuntu 24.04 など、パッケージがなければソースから入れます(`.github/workflows/試験.yml` の手順)。
-2. する 0.9.0 以上(ライブラリが C の関数を「以下の外部の入出力動作です … 以上です」で書くため)と kumu を入れます。Windows に要る 0.8.0 以上もこれで満たします。
+2. する 0.9.1 以上(ライブラリが C の関数を「以下は外部の入出力動作です … 以上です」で書くため)と kumu を入れます。Windows に要る 0.8.0 以上もこれで満たします。
 3. プロジェクトで `kumu 追加 github.com/suru-lang/gui-sdl3` とします。
 
 ## 使い方
