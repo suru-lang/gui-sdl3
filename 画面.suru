@@ -1,68 +1,44 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 sugarsweetrobotics
-# 「する」の GUI ライブラリの土台(SDL3 と SDL3_ttf を外部の関数として呼びます)
-# 使うファイルに 「画面」 を 読み込んで 使う と書きます。
+# The base of a GUI library for Suru. It calls SDL3 and SDL3_ttf through external functions.
+# Write `「画面」 を 読み込んで 使う` in your file.
 #
-# SDL3 の関数は、プロセスの最初のスレッド(主スレッド)で呼びます(macOS の窓のため)。
-# 座標は左上が 0、右と下へ増えます。単位は点(高解像度の画面でも同じ大きさ)です。
+# Call the SDL3 functions on the first thread of the process (the main thread), because macOS windows need it.
+# Coordinates start at 0 at the top left and grow to the right and down. The unit is points (the same size on high-resolution screens).
 #
-# 型
-#   色 … 赤 と 緑 と 青 の 組(0〜255)。例: 255 と 128 と 0 の 色
-#   四角 … 左 と 上 と 幅 と 高さ の 組
-#   窓 … 窓作成する で作るもの
-#   事象 … 窓事象取得する で受け取るもの(下の「事象の形」)
+# Drawing functions are not visible until `画面表示する`.
 #
-# 窓(どれも動作)
-#   題 を 幅 で 高さ に 窓作成する   … 窓を開く。文字は OS の日本語の書体で描く
-#   窓 を 窓閉鎖する                  … 閉じて SDL を終える
-#   窓 を 道 で 大きさ に 書体設定する … 書体のファイル(.ttf・.ttc・.otf)と大きさを変えた 窓
-#   窓 を 窓事象取得する              … 届いている事象を全部、事象 の リスト で(待たない)
-#   窓 を 窓寸法取得する              … 今の 幅 と 高さ(数 の リスト)
-#   窓 を 文字入力開始する、窓 を 文字入力終了する … 文字入力事象・編集中事象を受け取るか(IME も)
-# 描く(画面表示する までは見えません)
-#   窓 を 色 で 全面塗装する          … 全体を塗る
-#   窓 に 四角 を 色 で 四角塗装する  … 四角を塗る
-#   窓 に 四角 を 色 で 四角描画する  … 四角の枠を描く(1点の線)
-#   窓 に 始 から 終 へ 色 で 線描画する … 始・終 は 横 と 縦 の リスト
-#   窓 に 文 を 位置 で 色 から 文字描画する … 位置(横 と 縦 の リスト)を左上にして書く
-#   窓 に 文 を 文字寸法取得する      … 書いたときの 幅 と 高さ(数 の リスト)
-#   窓 を 画面表示する                … 描いたものを見せる(画面の書き換えに合わせて待つ)
-#   窓 を 道 へ 画像保存する          … 今描いているものを BMP で保存する(試験に)
-# 時間
-#   経過時間取得する                  … SDL を始めてからのミリ秒
-#   ミリ秒 を 一時停止する            … 待つ
+# **Widgets and apps.** `アプリ実行する` builds an app in the style of Elm. The model is the current value of the app. The draw function takes the model and gives a list of `部品` (widgets), and the update function takes a message and the model and gives the new model. `アプリ模擬する` runs the same without a window, for tests.
 #
-# 部品とアプリ(Elm のような作り)
-#   題 を 幅 で 高さ に 初期 から 更新 へ 描画 より アプリ実行する
-#     … 窓を開き、閉じるまで繰り返す。初期はモデル(アプリの今の値)の初めの値。
-#       描画 は モデル を受け取って 部品 の リスト を返す関数、更新 は 知らせ を モデル で 受け取って新しいモデルを返す関数
-#   事象列 を 初期 で 更新 に 描画 から アプリ模擬する … 窓を開かずに事象を当てた後のモデル(試験に)
-#   部品の形(後ろのものほど上に描き、マウスも先に受け取る)
-#     文 と 位置 の ラベル
-#     文 と 四角 と 知らせ の ボタン                  … 左ボタンで押して、同じボタンの上で離すと 知らせ
-#     値 と 文 と 四角 と 関数 の チェック            … 押すと （値 = 偽） を 関数 に渡した知らせ
-#     量 と 最小 と 最大 と 四角 と 関数 の スライダー … 押して動かすと、その位置の数を 関数 に渡した知らせ
-#     文 と 四角 と 関数 の 入力欄                    … 押すと焦点。打った文字・Backspace の後の文字列を 関数 に渡した知らせ。
-#                                                       Return・Esc で焦点を外す。IME の変換中の文字も見せる
-#     四角 と 色 の 色四角
+# The widgets (later ones are drawn on top and get the mouse first):
 #
-# 事象の形
-#   終了事象                          … 閉じるボタンなど
-#   キー の キー押下事象、キー の キー離上事象 … キーの名前(「A」「Return」「Escape」「Left」など)
-#   文 の 文字入力事象                … 確定した文字
-#   文 の 編集中事象                  … IME の変換中の文字(空なら変換が終わった)
-#   横 と 縦 の マウス移動事象
-#   ボタン と 横 と 縦 の マウス押下事象、… の マウス離上事象 … ボタンは 1 左・2 中・3 右
-#   横量 と 縦量 の ホイール事象
-#   幅 と 高さ の 窓寸法事象
-#   他事象                        … ほかの事象
+# - `文 と 位置 の ラベル`: a label.
+# - `文 と 四角 と 知らせ の ボタン`: a button. Pressing the left button on it and releasing on the same button sends `知らせ`.
+# - `値 と 文 と 四角 と 関数 の チェック`: a check box. A press sends the message that `関数` gives for `（値 = 偽）`.
+# - `量 と 最小 と 最大 と 四角 と 関数 の スライダー`: a slider. Pressing and dragging sends the message that `関数` gives for the number at that place.
+# - `文 と 四角 と 関数 の 入力欄`: a text field. A press focuses it, and typing or Backspace sends the message that `関数` gives for the new string. Return or Esc removes the focus. Text being converted by the IME is shown too.
+# - `四角 と 色 の 色四角`: a filled rectangle.
 外部の「SDL3」 を 主スレッドで 読み込む
 外部の「SDL3_ttf」 を 主スレッドで 読み込む
 「標準」 を 読み込んで 使う
 
+# A color: 赤, 緑 and 青, each from 0 to 255. For example `255 と 128 と 0 の 色`.
 色 とは 赤 と 緑 と 青 の 組 です
+# A rectangle: 左, 上, 幅 and `高さ`.
 四角 とは 左 と 上 と 幅 と 高さ の 組 です
+# A window, made by `窓作成する`.
 窓 とは 窓番地 と 描画器 と 事象域 と 出力域 と 文字機構 と 書体 と 倍率 の 組 です
+# An event from `窓事象取得する`:
+#
+# - `終了事象`: the close button and so on.
+# - `キー の キー押下事象`, `キー の キー離上事象`: a key, by its name (「A」, 「Return」, 「Escape」, 「Left」 and so on).
+# - `文 の 文字入力事象`: committed text.
+# - `文 の 編集中事象`: text being converted by the IME (empty when the conversion has ended).
+# - `横 と 縦 の マウス移動事象`.
+# - `ボタン と 横 と 縦 の マウス押下事象`, `… の マウス離上事象`: the button is 1 (left), 2 (middle) or 3 (right).
+# - `横量 と 縦量 の ホイール事象`.
+# - `幅 と 高さ の 窓寸法事象`.
+# - `他事象`: any other event.
 事象 とは 終了事象 か キー の キー押下事象 か キー の キー離上事象 か 文 の 文字入力事象 か 文 の 編集中事象 か 横 と 縦 の マウス移動事象 か ボタン と 横 と 縦 の マウス押下事象 か ボタン と 横 と 縦 の マウス離上事象 か 横量 と 縦量 の ホイール事象 か 幅 と 高さ の 窓寸法事象 か 他事象 です
 
 # --- C の関数(SDL3 の bool は 1 バイトなので 整数 で受けて下の 8 ビットを見る) ---
@@ -188,6 +164,7 @@ r を 何 で 確認する とは もし r が 成功である ならば 0 を �
   もし f = （0 を 番地にする） ならば 他 を 大きさ で 書体探索する そうでなければ f を 結果にします
   以上です
 
+# Opens a window with the title 題 and the size 幅 by `高さ`. Text is drawn with the OS's Japanese font.
 文字列 を 数 で 数 に 窓作成する は 窓 を 返す 動作
 題 を 幅 で 高さ に 窓作成する とは 以下の手順です
   a とは 映像旗 を 低初期化した 結果 です
@@ -224,6 +201,7 @@ p を 番地読取する とは 以下の手順です
   （（b を 数列にする） を 0 で 8 に 符号無読取する） を 番地にして 結果にします
   以上です
 
+# Closes the window and ends SDL.
 窓 を 窓閉鎖する は 無 を 返す 動作
 w を 窓閉鎖する とは 以下の手順です
   w の 書体 を 低書体閉鎖します
@@ -236,6 +214,7 @@ w を 窓閉鎖する とは 以下の手順です
   低終了します
   以上です
 
+# The window with another font: the font file at 道 (.ttf, .ttc or .otf) at the size `大きさ`.
 窓 を 文字列 で 単精度 に 書体設定する は 窓 を 返す 動作
 w を 道 で 大きさ に 書体設定する とは 以下の手順です
   f とは 道 を 大きさ * （w の 倍率） で 低書体開始した 結果 です
@@ -248,6 +227,7 @@ w を f で 書体交換する とは 以下の手順です
   （書体 は f の w） を 結果にします
   以上です
 
+# The current width and height of the window, as a list of numbers.
 窓 を 窓寸法取得する は 数 の リスト を 返す 動作
 w を 窓寸法取得する とは 以下の手順です
   p とは w の 出力域 です
@@ -258,12 +238,14 @@ w を 窓寸法取得する とは 以下の手順です
   （（xs を 0 で 4 に 符号無読取する） と （xs を 4 で 4 に 符号無読取する）） を 結果にします
   以上です
 
+# Starts receiving `文字入力事象` and `編集中事象` (including the IME).
 窓 を 文字入力開始する は 無 を 返す 動作
 w を 文字入力開始する とは 以下の手順です
   w の 窓番地 を 低入力開始します
   0 を 結果にします
   以上です
 
+# Stops receiving `文字入力事象` and `編集中事象`.
 窓 を 文字入力終了する は 無 を 返す 動作
 w を 文字入力終了する とは 以下の手順です
   w の 窓番地 を 低入力終了します
@@ -272,6 +254,7 @@ w を 文字入力終了する とは 以下の手順です
 
 # --- 事象 ---
 
+# All the events that have arrived, as a list of `事象`. It does not wait.
 窓 を 窓事象取得する は 事象 の リスト を 返す 動作
 w を 窓事象取得する とは 以下の手順です
   xs とは w を 空 で 事象収集した 結果 です
@@ -345,6 +328,7 @@ xs を キー読取する とは （xs を 28 で 4 に 符号無読取する）
 色 を 番地 で 色設定する は 整数 を 返す 動作
 （赤 と 緑 と 青 の 色） を r で 色設定する とは r を 赤 で 緑 に 青 から 255 へ 低色設定します
 
+# Fills the whole window with the color c.
 窓 を 色 で 全面塗装する は 無 を 返す 動作
 w を c で 全面塗装する とは 以下の手順です
   c を （w の 描画器） で 色設定します
@@ -352,6 +336,7 @@ w を c で 全面塗装する とは 以下の手順です
   0 を 結果にします
   以上です
 
+# Fills the rectangle q with the color c.
 窓 に 四角 を 色 で 四角塗装する は 無 を 返す 動作
 w に q を c で 四角塗装する とは 以下の手順です
   c を （w の 描画器） で 色設定します
@@ -359,6 +344,7 @@ w に q を c で 四角塗装する とは 以下の手順です
   0 を 結果にします
   以上です
 
+# Draws the outline of the rectangle q (a line of 1 point).
 窓 に 四角 を 色 で 四角描画する は 無 を 返す 動作
 w に q を c で 四角描画する とは 以下の手順です
   c を （w の 描画器） で 色設定します
@@ -366,6 +352,7 @@ w に q を c で 四角描画する とは 以下の手順です
   0 を 結果にします
   以上です
 
+# Draws a line from 始 to 終, each a list of x and y.
 窓 に 数 の リスト から 数 の リスト へ 色 で 線描画する は 無 を 返す 動作
 w に 始 から 終 へ c で 線描画する とは 以下の手順です
   c を （w の 描画器） で 色設定します
@@ -373,6 +360,7 @@ w に 始 から 終 へ c で 線描画する とは 以下の手順です
   0 を 結果にします
   以上です
 
+# Draws the text 文 with its top left at 位置 (a list of x and y).
 窓 に 文字列 を 数 の リスト で 色 から 文字描画する は 無 を 返す 動作
 w に 文 を 位置 で c から 文字描画する とは もし 文 = 「」 ならば 0 を 結果にする そうでなければ w に 文 を 位置 で c から 文字描画続行します
 
@@ -388,6 +376,7 @@ w に 文 を 位置 で （赤 と 緑 と 青 の 色） から 文字描画�
   t を 低文破棄します
   以上です
 
+# The width and height of the text 文 when drawn, as a list of numbers.
 窓 に 文字列 を 文字寸法取得する は 数 の リスト を 返す 動作
 w に 文 を 文字寸法取得する とは 以下の手順です
   p とは w の 出力域 です
@@ -399,12 +388,14 @@ w に 文 を 文字寸法取得する とは 以下の手順です
   （（xs を 0 で 符号付読取する） / 倍 と （xs を 4 で 符号付読取する） / 倍） を 結果にします
   以上です
 
+# Shows what has been drawn, waiting for the screen refresh.
 窓 を 画面表示する は 無 を 返す 動作
 w を 画面表示する とは 以下の手順です
   w の 描画器 を 低表示します
   0 を 結果にします
   以上です
 
+# Saves what is being drawn as a BMP file at 道 (for tests).
 窓 を 文字列 で 画像保存する は 無 を 返す 動作
 w を 道 で 画像保存する とは 以下の手順です
   s とは w の 描画器 を 低画素読取した 結果 です
@@ -420,9 +411,11 @@ s を 道 で 面保存する とは 以下の手順です
 
 # --- 時間 ---
 
+# The milliseconds since SDL started.
 経過時間取得する は 数 を 返す 動作
 経過時間取得する とは 低経過取得します
 
+# Waits ms milliseconds.
 数 を 一時停止する は 無 を 返す 動作
 ms を 一時停止する とは ms を 低待機します
 
@@ -431,9 +424,10 @@ ms を 一時停止する とは ms を 低待機します
 # 窓を開いて、事象に合わせて更新し、描き直すのを繰り返します。部品の当たり判定・押した見た目・
 # 入力欄の焦点と IME は、こちらで受け持ちます。
 
+# A widget: `ラベル`, `ボタン`, `チェック`, `スライダー`, `入力欄` or `色四角` (see the head of this page).
 部品 とは 文 と 位置 の ラベル か 文 と 枠 と 知らせ の ボタン か 値 と 文 と 枠 と 切替 の チェック か 量 と 最小 と 最大 と 枠 と 量変更 の スライダー か 文 と 枠 と 文変更 の 入力欄 か 枠 と 塗色 の 色四角 です
 
-# 焦点・押下は部品の番号(1 から。0 はなし)、指はマウスの 横 と 縦
+# Used inside the library: the model, the focused widget and the pressed widget (numbers from 1; 0 for none), the mouse position, and the text being edited.
 アプリ状態 とは 状モデル と 焦点 と 押下 と 指 と 編集 の 組 です
 
 前景色 とは 30 と 30 と 30 の 色 です
@@ -595,10 +589,11 @@ w に 真 を （左 と 上 と 幅 と 高さ の 四角） で 情報 から 
 
 # --- アプリを動かす ---
 
-# 窓を開かずに、事象を順にモデルへ当てた結果のモデル(試験に。マウスの座標は部品の枠と同じ単位)
+# The model after giving the events to the app in order, without opening a window (for tests). Mouse coordinates use the same unit as the widgets' rectangles.
 事象 の リスト を 甲 で 関数 に 関数 から アプリ模擬する は 甲 を 返す
 es を 初期 で 更新 に 描画 から アプリ模擬する とは （es を （初期 と 0 と 0 と （-1 と -1） と 「」 の アプリ状態） で 更新 に 描画 から 全事象処理する） の 状モデル です
 
+# Opens a window with the title 題 and the size 幅 by `高さ`, and runs the app until it is closed. 初期 is the first model, 描画 gives the widgets for a model, and 更新 gives the new model for a message and the model.
 文字列 を 数 で 数 に 甲 から 関数 へ 関数 より アプリ実行する は 無 を 返す 動作
 題 を 幅 で 高さ に 初期 から 更新 へ 描画 より アプリ実行する とは 以下の手順です
   w とは 題 を 幅 で 高さ に 窓作成した 結果 です
