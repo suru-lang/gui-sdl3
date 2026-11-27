@@ -79,6 +79,17 @@ The list of what is available is at the head of [画面.suru](画面.suru).
 5. **Pressing a text field focuses it and starts text input.** Return, Esc or pressing elsewhere unfocuses it. Text being composed by the IME is shown in blue with an underline, and Backspace deletes a character only when not composing.
 6. **`アプリ模擬する` lets you test without a window.** It is a pure function returning the model after applying a list of events in order. You can build mouse-down events and the like yourself and pass them.
 
+## API documentation
+
+The API documentation is made from the comments in `画面.suru`: the head comment of the file and the comment right above each public definition, written in English.
+
+```sh
+kumu 文書                                                            # writes docs/api/画面.md
+pip install -r docs/requirements.txt && sphinx-build docs docs/_build   # HTML in docs/_build
+```
+
+`docs/` and `.readthedocs.yaml` were written by `kumu 文書 --雛形` (Suru 0.11.0 or later). On every build, Read the Docs downloads kumu 0.11.0, runs `kumu 文書 --出力 docs/api` and then Sphinx, so the generated pages are not committed. The editor hover shows the same descriptions.
+
 ## Future work
 
 - Horizontal and vertical layout (deciding widget rectangles automatically), scrolling, multi-line text fields, cursor movement inside text fields
