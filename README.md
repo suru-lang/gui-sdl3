@@ -81,7 +81,7 @@ The list of what is available is at the head of [画面.suru](画面.suru).
 
 ## API documentation
 
-The API documentation is made from the comments in `画面.suru`: the head comment of the file and the comment right above each public definition, written in English.
+The API documentation is made from the comments in `画面.suru`: the head comment of the file and the comment right above each public definition, written in English. It is published at https://gui-sdl3.readthedocs.io/en/latest/.
 
 ```sh
 kumu 文書                                                            # writes docs/api/画面.md
